@@ -1,45 +1,38 @@
 package storage
 
 import (
-	"context"
-	"fmt"
-
 	"github.com/jmoiron/sqlx"
 )
 
 type dbStorage struct {
-	conn sqlx.Conn
+	db *sqlx.DB
 }
 
-func New(c sqlx.Conn) *dbStorage {
+func New(db *sqlx.DB) *dbStorage {
 	return &dbStorage{
-		conn: c,
+		db: db,
 	}
 }
 
 func (ds *dbStorage) Save(value string) {
-	ds.conn.ExecContext(
-		context.Background(),
+	ds.db.DB.Exec(
 		`insert into items (value) values ($1)`,
 		value,
 	)
 }
 
 func (ds *dbStorage) Retrieve(id int) string {
-	res, err := ds.conn.ExecContext(
-		context.Background(),
-		`select from items where id=$1`,
+	values := []string{}
+
+	err := ds.db.Select(
+		&values,
+		`select value from items where id=$1`,
 		id,
 	)
 
-	if err != nil {
+	if err != nil || len(values) == 0 {
 		return ""
 	}
 
-	insertedID, err := res.LastInsertId()
-	if err != nil || insertedID == 0 {
-		return ""
-	}
-
-	return fmt.Sprintf("%d", insertedID)
+	return values[0]
 }
