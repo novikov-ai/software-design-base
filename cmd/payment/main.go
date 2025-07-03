@@ -2,7 +2,7 @@ package main
 
 import (
 	"fmt"
-	
+
 	"software-design-base/internal/payment"
 	"software-design-base/internal/user"
 )
@@ -23,5 +23,5 @@ func main() {
 	tookMoney := 300000
 
 	user.Account.Withdraw(float64(tookMoney))
-	fmt.Printf("User withdrawed %v and the balance is: %v\n", tookMoney, user.Account.GetBalance())
+	fmt.Printf("User try to withdraw %v and the balance is: %v\n", tookMoney, user.Account.GetBalance())
 }
